@@ -3,6 +3,9 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
+const expenseTypeRoutes = require('./routes/expenseTypeRoutes');
+const budgetCategoryRoutes = require('./routes/budgetCategoryRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
 
 const app = express();
 
@@ -11,6 +14,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/expense-types', expenseTypeRoutes);
+app.use('/api/budget-categories', budgetCategoryRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'API is running' });
