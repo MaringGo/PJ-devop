@@ -4,7 +4,9 @@ import { AuthContext } from './context/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
-
+import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
+import Reports from './pages/Reports';
 import ExpenseTypes from './pages/ExpenseTypes';
 import BudgetCategories from './pages/BudgetCategories';
 
@@ -22,9 +24,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         
         <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-          <Route index element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Dashboard Placeholder</h2></div>} />
-          <Route path="transactions" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Transactions Placeholder</h2></div>} />
-          <Route path="reports" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Reports Placeholder</h2></div>} />
+          <Route index element={<Dashboard />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="reports" element={<Reports />} />
           <Route path="expense-types" element={<ExpenseTypes />} />
           <Route path="budget-categories" element={<BudgetCategories />} />
         </Route>

@@ -6,6 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const expenseTypeRoutes = require('./routes/expenseTypeRoutes');
 const budgetCategoryRoutes = require('./routes/budgetCategoryRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/expense-types', expenseTypeRoutes);
 app.use('/api/budget-categories', budgetCategoryRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'API is running' });
