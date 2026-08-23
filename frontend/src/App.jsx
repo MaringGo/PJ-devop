@@ -5,6 +5,9 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
+import ExpenseTypes from './pages/ExpenseTypes';
+import BudgetCategories from './pages/BudgetCategories';
+
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
   if (loading) return <div>Loading...</div>;
@@ -22,8 +25,8 @@ function App() {
           <Route index element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Dashboard Placeholder</h2></div>} />
           <Route path="transactions" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Transactions Placeholder</h2></div>} />
           <Route path="reports" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Reports Placeholder</h2></div>} />
-          <Route path="expense-types" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Expense Types Placeholder</h2></div>} />
-          <Route path="budget-categories" element={<div className="bg-white p-6 rounded-lg shadow-sm"><h2>Budgets Placeholder</h2></div>} />
+          <Route path="expense-types" element={<ExpenseTypes />} />
+          <Route path="budget-categories" element={<BudgetCategories />} />
         </Route>
       </Routes>
     </Router>
