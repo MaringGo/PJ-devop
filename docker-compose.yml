@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  db:
+    image: mariadb:10.11
+    container_name: e_utilities_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: utilities_db
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: e_utilities_pma
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  backend:
+    build: ./backend
+    container_name: e_utilities_backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: utilities_db
+      JWT_SECRET: supersecretjwtkey_please_change_in_production
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: e_utilities_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
