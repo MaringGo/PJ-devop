@@ -25,5 +25,29 @@ services:
     depends_on:
       - db
 
+  backend:
+    build: ./backend
+    container_name: e_utilities_backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: utilities_db
+      JWT_SECRET: supersecretjwtkey_please_change_in_production
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: e_utilities_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
 volumes:
   db_data:
