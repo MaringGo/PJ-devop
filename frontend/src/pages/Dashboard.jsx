@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TrendingUp, DollarSign, FileText, PieChart } from 'lucide-react';
+import ExportButtons from '../components/ExportButtons';
+import BarChart from '../components/BarChart';
 
 const MONTH_NAMES = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 const COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -28,8 +30,18 @@ const Dashboard = () => {
   const remaining = data.monthlyBudget - data.monthlySpending;
   const maxByType = Math.max(...data.byType.map(t => parseFloat(t.total)), 1);
 
+  // Export URLs for current month
+  const now = new Date();
+  const startMonth = now.getMonth() + 1;
+  const startYear = now.getFullYear();
+  const endMonth = startMonth;
+  const endYear = startYear;
+  const pdfUrl = `http://localhost:5000/api/export/pdf?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`;
+  const excelUrl = `http://localhost:5000/api/export/excel?startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`;
+
   return (
     <div className="space-y-6">
+      <ExportButtons pdfUrl={pdfUrl} excelUrl={excelUrl} />
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -90,7 +102,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Spending by Type - Bar Chart */}
+        {/* Spending by Type - Horizontal bars (keep) */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">ค่าใช้จ่ายตามประเภท (เดือนนี้)</h3>
           <div className="space-y-3">
@@ -112,26 +124,14 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Monthly Trend */}
+        {/* Monthly Trend - BarChart component */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">แนวโน้มรายเดือน</h3>
-          <div className="flex items-end space-x-4 h-48">
-            {data.trend.map((item, i) => {
-              const maxTrend = Math.max(...data.trend.map(t => parseFloat(t.total)), 1);
-              const height = (parseFloat(item.total) / maxTrend) * 100;
-              return (
-                <div key={i} className="flex flex-col items-center flex-1">
-                  <span className="text-xs text-gray-500 mb-1">฿{(parseFloat(item.total) / 1000).toFixed(0)}k</span>
-                  <div
-                    className="w-full bg-indigo-500 rounded-t-md transition-all hover:bg-indigo-600"
-                    style={{ height: `${Math.max(height, 5)}%` }}
-                  />
-                  <span className="text-xs text-gray-500 mt-2">{MONTH_NAMES[item.month]}</span>
-                </div>
-              );
-            })}
-            {data.trend.length === 0 && <p className="text-gray-400 text-center py-4 w-full">ไม่มีข้อมูล</p>}
-          </div>
+          <BarChart
+            series={[{ label: 'ค่าใช้จ่าย', color: '#6366f1', data: data.trend.map(t => parseFloat(t.total)) }]}
+            labels={data.trend.map(t => MONTH_NAMES[t.month])}
+            height={200}
+          />
         </div>
       </div>
 

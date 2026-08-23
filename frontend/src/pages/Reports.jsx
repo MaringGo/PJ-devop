@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import BarChart from '../components/BarChart';
 
 const MONTH_NAMES = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 const COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -81,38 +82,22 @@ const Reports = () => {
 
       {reportData && (
         <>
-          {/* Stacked Bar Chart Comparison */}
+          {/* Grouped Bar Chart Comparison - using BarChart component */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">เปรียบเทียบค่าใช้จ่ายรายเดือน</h3>
-            <div className="flex items-end space-x-6 h-64 mb-4">
-              {comparison.map((item, i) => {
-                const total = Object.values(item.types).reduce((a, b) => a + b, 0);
-                const height = (total / maxMonthly) * 100;
-                return (
-                  <div key={i} className="flex flex-col items-center flex-1">
-                    <span className="text-xs text-gray-500 mb-1">฿{(total / 1000).toFixed(1)}k</span>
-                    <div className="w-full rounded-t-md overflow-hidden" style={{ height: `${Math.max(height, 5)}%` }}>
-                      {allTypes.map((type, ti) => {
-                        const val = item.types[type] || 0;
-                        const pct = total > 0 ? (val / total) * 100 : 0;
-                        return <div key={ti} style={{ height: `${pct}%`, backgroundColor: COLORS[ti % COLORS.length] }} />;
-                      })}
-                    </div>
-                    <span className="text-xs text-gray-600 mt-2 font-medium">{MONTH_NAMES[item.month]} {item.year}</span>
-                  </div>
-                );
-              })}
-              {comparison.length === 0 && <p className="text-gray-400 text-center py-4 w-full">ไม่มีข้อมูลในช่วงที่เลือก</p>}
-            </div>
-            {/* Legend */}
-            <div className="flex flex-wrap gap-4 mt-2">
-              {allTypes.map((type, i) => (
-                <div key={i} className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                  <span className="text-sm text-gray-600">{type}</span>
-                </div>
-              ))}
-            </div>
+            {comparison.length === 0 ? (
+              <p className="text-gray-400 text-center py-10">ไม่มีข้อมูลในช่วงที่เลือก</p>
+            ) : (
+              <BarChart
+                series={allTypes.map((type, ti) => ({
+                  label: type,
+                  color: COLORS[ti % COLORS.length],
+                  data: comparison.map(c => c.types[type] || 0)
+                }))}
+                labels={comparison.map(c => `${MONTH_NAMES[c.month]} ${c.year}`)}
+                height={240}
+              />
+            )}
           </div>
 
           {/* Budget vs Actual Table */}
