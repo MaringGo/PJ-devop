@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     image: mariadb:10.11
@@ -27,6 +26,7 @@ services:
 
   backend:
     build: ./backend
+    image: chalit06/pj-backend:latest
     container_name: e_utilities_backend
     ports:
       - "5000:5000"
@@ -41,6 +41,7 @@ services:
 
   frontend:
     build: ./frontend
+    image: chalit06/pj-frontend:latest
     container_name: e_utilities_frontend
     ports:
       - "5173:5173"
@@ -51,3 +52,4 @@ services:
 
 volumes:
   db_data:
+

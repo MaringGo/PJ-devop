@@ -113,19 +113,31 @@ Password: admin123
 
 ## 🐳 Docker Hub
 
-### Build & Push Images
+Image ทั้งหมดถูก build และ push ขึ้น Docker Hub ภายใต้บัญชี **`chalit06`**:
+- **Backend Image:** `chalit06/pj-backend:latest`
+- **Frontend Image:** `chalit06/pj-frontend:latest`
+
+### วิธีดึง Image มารัน (Pull & Run):
 
 ```bash
-# Login Docker Hub
+# 1. ดึง images ล่าสุดทั้งหมดลงมา
+docker compose pull
+
+# 2. รัน container ทั้งหมดในพื้นหลัง (ไม่ต้อง build ใหม่)
+docker compose up -d
+```
+
+### การ Build & Push เมื่อแก้ไขโค้ด:
+
+```bash
+# 1. Login Docker Hub
 docker login
 
-# Build images
-docker build -t <dockerhub-username>/e-utilities-backend:latest ./backend
-docker build -t <dockerhub-username>/e-utilities-frontend:latest ./frontend
+# 2. Build images
+docker compose build
 
-# Push to Docker Hub
-docker push <dockerhub-username>/e-utilities-backend:latest
-docker push <dockerhub-username>/e-utilities-frontend:latest
+# 3. Push ขึ้น Docker Hub
+docker compose push
 ```
 
 ---

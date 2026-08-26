@@ -5,6 +5,8 @@ import {
   LogOut, Home, Wallet, PieChart, Settings, Menu, X,
   BarChart2, ChevronRight
 } from 'lucide-react';
+import MusicPlayer from './MusicPlayer';
+
 
 const NAV_ITEMS = [
   { to: '/',                  icon: Home,      label: 'Dashboard',        group: 'main' },
@@ -96,9 +98,9 @@ const Layout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* ── Desktop Sidebar (hidden on mobile) */}
-      <aside className="hidden md:flex w-60 bg-indigo-700 text-white flex-col flex-shrink-0">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
+      {/* ── Desktop Sidebar (Fixed, does not scroll with page content) */}
+      <aside className="hidden md:flex w-60 bg-indigo-700 text-white flex-col flex-shrink-0 h-screen sticky top-0">
         <SidebarContent />
       </aside>
 
@@ -120,10 +122,10 @@ const Layout = () => {
         </div>
       )}
 
-      {/* ── Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
+      {/* ── Main Content (Scrolls independently) */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 h-14 flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
+        <header className="bg-white border-b border-gray-200 h-14 flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30 flex-shrink-0">
           {/* Mobile menu button */}
           <button
             className="md:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
@@ -146,6 +148,9 @@ const Layout = () => {
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <Outlet />
         </div>
+
+        {/* Background Music Player Widget */}
+        <MusicPlayer />
       </main>
     </div>
   );
