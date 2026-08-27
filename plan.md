@@ -9,6 +9,7 @@
 - **Database Management**: phpMyAdmin
 - **Authentication & Security**: JWT (JSON Web Token) + bcrypt
 - **Infrastructure / Deployment**: Docker & Docker Compose
+- **CI/CD Pipeline**: GitHub Actions / GitLab CI
 
 ## Phase 1: การออกแบบและวางโครงสร้าง (Architecture & Design)
 - **Database Design**: ออกแบบตารางข้อมูลหลัก ได้แก่
@@ -50,8 +51,11 @@
   - เขียน `Dockerfile` สำหรับ Backend
   - เขียน `Dockerfile` สำหรับ Frontend (กรณีแยก Container)
   - เขียน `docker-compose.yml` สำหรับเชื่อมต่อ Service ทั้งหมดเข้าด้วยกัน (รวม Database)
-- **CI/CD Pipeline (ตัวเลือกเสริม)**:
-  - ตั้งค่า GitHub Actions (หรือ GitLab CI) เพื่อทำการ Build Image อัตโนมัติเมื่อมีการ Push Code
+- **CI/CD Pipeline**:
+  - ติดตั้งและกำหนดค่า CI/CD (เช่น GitHub Actions, GitLab CI หรือ Jenkins)
+  - กำหนดขั้นตอน Automated Testing สำหรับตรวจสอบโค้ด
+  - กำหนดขั้นตอน Automated Build เพื่อสร้าง Docker Image อัตโนมัติเมื่อมีการ Push Code
+  - กำหนดขั้นตอน Automated Deployment ไปยัง Server ทดสอบหรือ Production
 - **Docker Hub**:
   - Build Image (`docker build -t e-utilities-cost-app .`)
   - Push Image ขึ้น Docker Hub (`docker push <username>/e-utilities-cost-app:latest`)
