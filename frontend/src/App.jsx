@@ -9,6 +9,7 @@ import Transactions from './pages/Transactions';
 import Reports from './pages/Reports';
 import ExpenseTypes from './pages/ExpenseTypes';
 import BudgetCategories from './pages/BudgetCategories';
+import Profile from './pages/Profile';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -29,6 +30,7 @@ function App() {
           <Route path="reports" element={<Reports />} />
           <Route path="expense-types" element={<ExpenseTypes />} />
           <Route path="budget-categories" element={<BudgetCategories />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
     </Router>

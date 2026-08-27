@@ -3,15 +3,15 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
   LogOut, Home, Wallet, PieChart, Settings, Menu, X,
-  BarChart2, ChevronRight
+  BarChart2, ChevronRight, User as UserIcon
 } from 'lucide-react';
 import MusicPlayer from './MusicPlayer';
-
 
 const NAV_ITEMS = [
   { to: '/',                  icon: Home,      label: 'Dashboard',        group: 'main' },
   { to: '/transactions',      icon: Wallet,    label: 'รายการค่าใช้จ่าย', group: 'main' },
   { to: '/reports',           icon: BarChart2, label: 'รายงาน',           group: 'main' },
+  { to: '/profile',           icon: UserIcon,  label: 'โปรไฟล์ของฉัน',    group: 'main' },
   { to: '/expense-types',     icon: Settings,  label: 'ประเภทค่าใช้จ่าย', group: 'master' },
   { to: '/budget-categories', icon: PieChart,  label: 'หมวดงบประมาณ',     group: 'master' },
 ];
@@ -20,6 +20,7 @@ const PAGE_TITLES = {
   '/':                  'Dashboard',
   '/transactions':      'รายการค่าใช้จ่าย',
   '/reports':           'รายงานย้อนหลัง / เปรียบเทียบ',
+  '/profile':           'โปรไฟล์ผู้ใช้งาน',
   '/expense-types':     'ประเภทค่าใช้จ่าย',
   '/budget-categories': 'หมวดงบประมาณ',
 };
@@ -32,6 +33,18 @@ const Layout = () => {
 
   const handleLogout = () => { logout(); navigate('/login'); };
   const pageTitle = PAGE_TITLES[location.pathname] || 'e-Utilities';
+
+  const avatarColor = user?.avatar_color || '#4f46e5';
+  const getInitials = (name, username) => {
+    if (name && name.trim().length > 0) {
+      const parts = name.trim().split(' ');
+      if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      return name.substring(0, 2).toUpperCase();
+    }
+    return (username || 'U').substring(0, 2).toUpperCase();
+  };
+
+  const displayName = user?.full_name || user?.username || 'ผู้ใช้งาน';
 
   const SidebarContent = () => (
     <>
@@ -51,7 +64,7 @@ const Layout = () => {
               key={to} to={to}
               onClick={() => setSideOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${active ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-indigo-600/60'}`}
+                ${active ? 'bg-white/20 text-white shadow-sm' : 'text-indigo-100 hover:bg-indigo-600/60'}`}
             >
               <Icon size={18} />
               <span className="flex-1">{label}</span>
@@ -68,7 +81,7 @@ const Layout = () => {
               key={to} to={to}
               onClick={() => setSideOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${active ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-indigo-600/60'}`}
+                ${active ? 'bg-white/20 text-white shadow-sm' : 'text-indigo-100 hover:bg-indigo-600/60'}`}
             >
               <Icon size={18} />
               <span className="flex-1">{label}</span>
@@ -79,16 +92,29 @@ const Layout = () => {
       </nav>
 
       {/* User info */}
-      <div className="p-4 border-t border-indigo-600">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-indigo-400 flex items-center justify-center text-sm font-bold uppercase flex-shrink-0">
-            {user?.username?.[0] || 'U'}
-          </div>
-          <span className="text-sm flex-1 truncate">{user?.username}</span>
+      <div className="p-3 border-t border-indigo-600">
+        <div className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-indigo-600/50 transition-colors">
+          <Link
+            to="/profile"
+            onClick={() => setSideOpen(false)}
+            className="flex items-center gap-2.5 flex-1 min-w-0"
+            title="ดูโปรไฟล์"
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold uppercase flex-shrink-0 text-white shadow-sm border border-white/20"
+              style={{ backgroundColor: avatarColor }}
+            >
+              {getInitials(user?.full_name, user?.username)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate leading-snug">{displayName}</p>
+              <p className="text-[11px] text-indigo-200 truncate">{user?.role || 'ผู้ใช้งาน'}</p>
+            </div>
+          </Link>
           <button
             onClick={handleLogout}
             title="ออกจากระบบ"
-            className="p-1.5 bg-indigo-800 rounded-md hover:bg-red-600 transition-colors"
+            className="p-1.5 bg-indigo-800/80 hover:bg-red-600 rounded-lg text-white transition-colors"
           >
             <LogOut size={15} />
           </button>
@@ -136,12 +162,23 @@ const Layout = () => {
 
           <h2 className="text-base md:text-lg font-semibold text-gray-800 flex-1 truncate">{pageTitle}</h2>
 
-          {/* Mobile user avatar */}
-          <div className="md:hidden flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold uppercase">
-              {user?.username?.[0] || 'U'}
+          {/* Header User Pill / Shortcut to Profile */}
+          <Link
+            to="/profile"
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-gray-100 border border-gray-200/80 transition-colors"
+            title="ไปที่โปรไฟล์"
+          >
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm"
+              style={{ backgroundColor: avatarColor }}
+            >
+              {getInitials(user?.full_name, user?.username)}
             </div>
-          </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-semibold text-gray-800 leading-none truncate max-w-[120px]">{displayName}</p>
+              <p className="text-[10px] text-gray-500 leading-tight mt-0.5">{user?.department || 'สำนักงาน'}</p>
+            </div>
+          </Link>
         </header>
 
         {/* Page Content */}

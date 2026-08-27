@@ -9,13 +9,33 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      let token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (token) {
-        // Here we could verify token with backend if we had an endpoint
-        // For now, we trust the token and user data in localStorage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-          setUser(JSON.parse(storedUser));
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch (e) {
+            console.error('Error parsing stored user:', e);
+          }
+        }
+
+        // Try to fetch latest profile from backend
+        try {
+          const res = await axios.get('http://localhost:5000/api/auth/profile', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.data?.user) {
+            setUser(res.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+          }
+        } catch (err) {
+          if (err.response?.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+          }
         }
       }
       setLoading(false);
@@ -37,14 +57,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (username, password) => {
+  const register = async (username, password, full_name, email, department) => {
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { username, password });
+      await axios.post('http://localhost:5000/api/auth/register', { 
+        username, 
+        password, 
+        full_name, 
+        email, 
+        department 
+      });
       return true;
     } catch (error) {
       console.error(error);
       return false;
     }
+  };
+
+  const updateUser = (updatedUserData) => {
+    const newUser = { ...user, ...updatedUserData };
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setUser(newUser);
   };
 
   const logout = () => {
@@ -54,8 +86,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
+

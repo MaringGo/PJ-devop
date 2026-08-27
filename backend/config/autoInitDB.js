@@ -23,9 +23,34 @@ async function autoInitAndSeed(retries = 10, delay = 3000) {
           id INT AUTO_INCREMENT PRIMARY KEY,
           username VARCHAR(255) NOT NULL UNIQUE,
           password_hash VARCHAR(255) NOT NULL,
+          full_name VARCHAR(255) DEFAULT '',
+          email VARCHAR(255) DEFAULT '',
+          phone VARCHAR(50) DEFAULT '',
+          department VARCHAR(255) DEFAULT 'สำนักงาน',
+          role VARCHAR(100) DEFAULT 'ผู้ใช้งานทั่วไป',
+          avatar_color VARCHAR(50) DEFAULT '#6366f1',
+          bio TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
+
+      // Ensure existing users table has the new profile columns
+      const alterQueries = [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255) DEFAULT ''",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255) DEFAULT ''",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50) DEFAULT ''",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS department VARCHAR(255) DEFAULT 'สำนักงาน'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(100) DEFAULT 'ผู้ใช้งานทั่วไป'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_color VARCHAR(50) DEFAULT '#6366f1'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT"
+      ];
+      for (const q of alterQueries) {
+        try {
+          await connection.query(q);
+        } catch (e) {
+          // Ignore if already applied
+        }
+      }
 
       await connection.query(`
         CREATE TABLE IF NOT EXISTS expense_types (
@@ -69,9 +94,9 @@ async function autoInitAndSeed(retries = 10, delay = 3000) {
         const hash1 = await bcrypt.hash('admin123', salt);
         const hash2 = await bcrypt.hash('user123', salt);
 
-        await connection.query(`INSERT INTO users (id, username, password_hash) VALUES 
-          (1, 'admin', ?),
-          (2, 'user01', ?)
+        await connection.query(`INSERT INTO users (id, username, password_hash, full_name, email, department, role, avatar_color) VALUES 
+          (1, 'admin', ?, 'ผู้ดูแลระบบ', 'admin@utilities.local', 'ฝ่ายบริหารและไอที', 'ผู้ดูแลระบบสูงสุด', '#4f46e5'),
+          (2, 'user01', ?, 'สมชาย ใจดี', 'user01@utilities.local', 'ฝ่ายการเงินและบัญชี', 'เจ้าหน้าที่บันทึกข้อมูล', '#06b6d4')
         `, [hash1, hash2]);
 
         await connection.query(`INSERT INTO expense_types (id, name, description) VALUES 
